@@ -1,5 +1,5 @@
 #导入flask模块
-from flask import Flask
+from flask import Flask,jsonify
 from flask_sqlalchemy import SQLAlchemy
 import config   #数据库配置
 import logging  #日志配置
@@ -30,6 +30,30 @@ db = SQLAlchemy(app)
 #为app程序添加 文件日志处理器 默认是stream out handler
 app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
+
+
+def page_not_found(e):
+    return jsonify(msg=str(e), code=404), 404
+
+
+def bad_request(e):
+    return jsonify(msg=str(e), code=400), 400
+
+
+def method_not_allowed(e):
+    return jsonify(msg=str(e), code=405), 405
+
+
+def internal_server_error(e):
+    return jsonify(msg=str(e), code=500), 500
+
+
+#全局处理API错误
+app.register_error_handler(404, page_not_found)
+app.register_error_handler(400, bad_request)
+app.register_error_handler(405, method_not_allowed)
+app.register_error_handler(500, internal_server_error)
+
 
 # class Country(db.Model)
 
